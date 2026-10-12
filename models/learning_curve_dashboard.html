@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unibots RL Training & Plateau Dashboard</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 24px;
+      margin: 0;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 14px;
+      background: #16a34a;
+      color: #ffffff;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .metric-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .metric-title { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
+    .metric-value { font-size: 24px; font-weight: 700; color: #38bdf8; margin-top: 4px; }
+    svg { width: 100%; height: 320px; }
+    .chart-line { fill: none; stroke-width: 2.5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0; color:#f8fafc;">Unibots RL Multi-Agent Training Dashboard</h2>
+      <span class="status-badge">ACTIVE LEARNING</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-box">
+        <div class="metric-title">Total Timesteps</div>
+        <div class="metric-value">303,104</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-title">Peak Mean Reward</div>
+        <div class="metric-value">0.00</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-title">Latest Reward</div>
+        <div class="metric-value">0.00</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-title">Training FPS</div>
+        <div class="metric-value">1162</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0; color:#38bdf8;">Diagnostic & Rescaling Recommendation</h3>
+    <p><strong>Diagnosis:</strong> Policy is improving at +0.00 reward points per million timesteps.</p>
+    <p><strong>Recommended Strategy:</strong> CONTINUE TRAINING: Progressing along upward gradient.</p>
+  </div>
+</body>
+</html>

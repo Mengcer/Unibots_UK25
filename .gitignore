@@ -1,0 +1,78 @@
+# =====================================================================
+# Unibots UK Autonomous Robotics Repository - .gitignore
+# =====================================================================
+
+# --- Virtual Environments ---
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# --- Python Bytecode & Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.manifest
+*.spec
+
+# --- Testing & Type Checking ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Intermediate RL Checkpoints (Optional) ---
+# Intermediate step snapshots can be large and redundant;
+# the final consolidated models (*.zip, *.pkl) in models/ are retained.
+models/checkpoints/
+
+# --- Build & Distribution Artifacts ---
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- IDEs & Code Editors ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+*~
+
+# --- Operating System Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# --- Logs and Dumps ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

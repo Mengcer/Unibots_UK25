@@ -1,0 +1,15 @@
+# Unibots UK Autonomous Robotics Simulation & RL Training Pipeline
+# Python 3.11+ / 3.12+ / 3.13+ compatible
+
+# Core Numerics & Physics Simulation
+numpy>=1.26.0
+pygame>=2.5.0
+
+# Deep Reinforcement Learning & Machine Learning
+torch>=2.2.0
+torchvision>=0.17.0
+gymnasium>=1.0.0
+pettingzoo>=1.24.0
+SuperSuit>=3.9.0
+stable_baselines3>=2.3.0
+cloudpickle>=3.0.0
