@@ -20,6 +20,7 @@
 - [Grand 5-Way Benchmark Results](#-grand-5-way-benchmark-results)
 - [The 9 Optimization Breakthroughs](#-the-9-optimization-breakthroughs)
 - [Physical Hardware & Actuator Realism](#-physical-hardware--actuator-realism)
+  - [Arbitrary Match Rule Assumptions (10s Penalty & 30s Deposit)](#arbitrary-match-rule-assumptions-10s-penalty--30s-deposit)
 - [Embedded Firmware Deployment (ESP32)](#-embedded-firmware-deployment-esp32)
 - [Repository Structure](#-repository-structure)
 - [Git Guide: What to Push vs. What to Ignore](#-git-guide-what-to-push-vs-what-to-ignore)
@@ -27,7 +28,8 @@
   - [Installation](#1-installation)
   - [Interactive Simulator GUI](#2-interactive-simulator-gui)
   - [Running the Grand Tournament Benchmark](#3-running-the-grand-tournament-benchmark)
-  - [Retraining the Models](#4-retraining-the-models)
+  - [Training Acceleration: CPU vs. GPU (Code Toggle & Performance)](#4-training-acceleration-cpu-vs-gpu-code-toggle--performance)
+  - [Retraining the Models](#5-retraining-the-models)
 - [AI Assistance & Attribution Disclaimer](#-ai-assistance--attribution-disclaimer)
 - [License & Acknowledgements](#-license--acknowledgements)
 
@@ -205,6 +207,22 @@ A major flaw of many RL robotics simulators is operating under idealized physics
 - **Actuator Deadband & Stiction**: Simulated a $30\text{ mm/s}$ velocity deadband and $0.2\text{ rad/s}$ angular deadband to replicate gearbox stiction and motor back-EMF thresholds.
 - **Mechanical Inertia Lag**: $120\text{ ms}$ exponential first-order response lag between commanded velocity and physical wheel acceleration.
 
+### Arbitrary Match Rule Assumptions (10s Penalty & 30s Deposit)
+In [`simulation/core.py`](file:///c:/Users/user/Documents/Arduino/UnibotsUK_25_Codebase/simulation/core.py#L28-L29), two timing parameters dictate match pacing:
+
+```python
+# Penalty & Deposit durations in simulation/core.py
+PENALTY_FREEZE_SECONDS = 10.0
+DEPOSIT_DURATION_SECONDS = 30.0 # Docking & depositing takes 30s
+```
+
+> [!NOTE]
+> **Context on these arbitrary parameters:**
+> 1. **10.0-Second Penalty Freeze**: This value was modeled after what competition organizers and marshals enforced on site during the live event for infractions, collisions, or robot interventions.
+> 2. **30.0-Second Deposit Duration**: This was an assumed arbitrary duration chosen to reflect the physical time an electromechanical mechanism (servo-actuated gate, ramp tilt, or continuous reverse-belt conveyor) would realistically take to discharge captured elements into the scoring net.
+> 
+> Both values are fully configurable in `core.py` if your team's physical ejector operates faster or competition rule updates modify penalty freeze durations.
+
 ---
 
 ## 🔌 Embedded Firmware Deployment (ESP32)
@@ -351,7 +369,42 @@ Run the comprehensive 5-way benchmark comparing all controllers:
 python -m simulation.benchmark_all
 ```
 
-### 4. Retraining the Models
+### 4. Training Acceleration: CPU vs. GPU (Code Toggle & Performance)
+
+#### Which Files & Lines to Change
+Hardware acceleration is toggled directly in the training scripts:
+
+1. **[`simulation/train.py`](file:///c:/Users/user/Documents/Arduino/UnibotsUK_25_Codebase/simulation/train.py#L50)** (Line 50):
+   ```python
+   # Default: auto-detects CUDA
+   device = "cuda" if torch.cuda.is_available() else "cpu"
+
+   # To force CPU (Fastest FPS):
+   device = "cpu"
+
+   # To force GPU (Offloads CPU cores):
+   device = "cuda"
+   ```
+
+2. **[`simulation/train_bc_rl.py`](file:///c:/Users/user/Documents/Arduino/UnibotsUK_25_Codebase/simulation/train_bc_rl.py#L77-L162)** (Line 77 in `pretrain_behavior_cloning` and Line 160 in `main`):
+   ```python
+   # Line 77:
+   device = "cpu"  # or "cuda"
+
+   # Line 160:
+   device = "cpu"  # or "cuda"
+   ```
+
+#### ⚡ Performance Difference: Why CPU is Often Faster
+In deep reinforcement learning with robotics simulators, hardware performance can be counter-intuitive:
+- **Small Neural Network Footprint**: The PPO actor-critic network is a lightweight MLP ($32 \to 64 \to 64 \to 3$). The computational cost of the forward pass is minimal ($\ll 1\text{ ms}$).
+- **PCIe Bus Bottleneck**: The custom 30 Hz multi-agent arena physics, ball bouncing, raycasts, and spatial memory updates run in Python on the host CPU. Moving small 32-dimensional tensors back and forth across the PCIe bus between system RAM and GPU VRAM introduces data-transfer latency and CUDA synchronization overhead.
+- **Result**: In raw frames-per-second (FPS), **running purely on CPU is actually faster** than GPU for this specific environment!
+- **Why GPU was Used**: GPU (`cuda`) was explicitly selected during our training runs because the host system needed to execute other CPU-intensive multitasking workloads simultaneously. Offloading tensor batches to the GPU allowed training to proceed smoothly in the background without starving or throttling host CPU cores.
+
+---
+
+### 5. Retraining the Models
 - **Train Behavior Cloning + PPO**:
   ```bash
   python -m simulation.train_bc_rl
