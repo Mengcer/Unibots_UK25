@@ -331,8 +331,8 @@ The provided [`.gitignore`](file:///.gitignore) automatically filters out:
 Clone the repository and install the dependencies in a Python 3.11+ environment:
 
 ```bash
-git clone https://github.com/<your-username>/UnibotsUK_25_Codebase.git
-cd UnibotsUK_25_Codebase
+git clone https://github.com/Mengcer/Unibots_UK25.git
+cd Unibots_UK25
 
 # Create and activate virtual environment
 python -m venv .venv
