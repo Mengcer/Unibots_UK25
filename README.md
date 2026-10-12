@@ -18,7 +18,7 @@
   - [Inspiration: Lin Yi's Street Fighter AI](#inspiration-lin-yis-street-fighter-ai)
 - [System Architecture & Controller Spectrum](#-system-architecture--controller-spectrum)
 - [Grand 5-Way Benchmark Results](#-grand-5-way-benchmark-results)
-- [The 9 Optimization Breakthroughs](#-the-9-optimization-breakthroughs)
+- [The 9 Optimisation Breakthroughs](#-the-9-optimisation-breakthroughs)
 - [Physical Hardware & Actuator Realism](#-physical-hardware--actuator-realism)
   - [Arbitrary Match Rule Assumptions (10s Penalty & 30s Deposit)](#arbitrary-match-rule-assumptions-10s-penalty--30s-deposit)
 - [Embedded Firmware Deployment (ESP32)](#-embedded-firmware-deployment-esp32)
@@ -47,14 +47,14 @@ In the official tournament, matches are fundamentally a **4-way free-for-all** (
 During the 2025 tournament, a podium-finishing team demonstrated how remarkably effective a disciplined, hardcoded open-loop scanning routine can be: by executing consistent, high-speed sweeping lines across the field with minimal sensor overhead, their bot secured an impressive **3rd place finish**. It proved just how fast, reliable, and competitive open-loop execution can be when tuned well.
 
 However, our team was personally captivated by the deeper engineering challenge of **adaptive autonomous robotics**:
-- Can a robot dynamically perceive contested elements and prioritize high-value clusters?
+- Can a robot dynamically perceive contested elements and prioritise high-value clusters?
 - Can it reactively evade unpredictable multi-robot traffic and negotiate close-quarters encounters?
 - Can it dynamically self-correct against wheel slip, bumper deflections, and mechanical stiction?
 
 Our 2025 entry took the autonomous route using **Artificial Potential Fields (APF)**. However, physical reality struck hard: **severe electrical and mechanical challenges** crippled our field performance. Gearbox stiction, sensor noise, and heavy stall current spikes frequently browned out our onboard ESP32 logic rail under locked-rotor conditions. Consequently, our 2025 results fell well short of our 2024 campaign.
 
 ### The 2026 Revival: Attacking the Problem Head-On
-In 2026, armed with the improved **Unibots UK 2026–2027 Rulebook**, we decided to revisit the challenge. Rather than resorting to hardcoded paths, we set out to solve autonomous navigation from first principles—analyzing the problem across both **micro** (low-level motor physics, traction, slew rate, holonomic centering) and **macro** (high-level multi-agent game strategy, triad set completion, auction coordination) levels.
+In 2026, armed with the improved **Unibots UK 2026–2027 Rulebook**, we decided to revisit the challenge. Rather than resorting to hardcoded paths, we set out to solve autonomous navigation from first principles—analysing the problem across both **micro** (low-level motor physics, traction, slew rate, holonomic centring) and **macro** (high-level multi-agent game strategy, triad set completion, auction coordination) levels.
 
 ### Inspiration: Lin Yi's Street Fighter AI
 Our approach was heavily inspired by the pioneering work of **Lin Yi** in [LYiHub/pub-street-fighter-ai](https://github.com/LYiHub/pub-street-fighter-ai) (Street Fighter II PPO & Hierarchical RL). Lin Yi highlighted that pure end-to-end RL often collapses due to high-frequency action dithering, credit assignment over extreme time horizons, and reward sparsity. 
@@ -63,7 +63,7 @@ We adapted four core principles from Lin Yi's work into multi-agent competitive 
 
 1. **Domain-Specific Asymmetric Reward Shaping**:  
    Instead of rewarding raw forward speed or trivial proximity, we shaped utility around marginal game value: compounding **18.0× bonuses** for completing Red-Green-Blue triads, dynamic container fullness incentives, and upfront docking credits to conquer the $(0.99)^{900}$ discount horizon barrier.
-2. **Behavioral Cloning (BC) Bootstrapping**:  
+2. **Behavioural Cloning (BC) Bootstrapping**:  
    Rather than letting PPO wander blindly in random exploration, we pre-trained policies on 150,000 state-action pairs collected from an expert APF baseline, warm-starting the policy network before applying RL fine-tuning.
 3. **Hierarchical Decoupling (Macro Strategy vs. Micro Physics)**:  
    Lin Yi used frame-skipping and macro-actions to avoid high-frequency button thrashing. Similarly, we decoupled **strategic high-level macro planning** (target auction, Voronoi partitioning, triad denial) from **30 Hz continuous holonomic low-level execution** (APF vector fields, acceleration slew-rate limiting, ColRegs obstacle evasion).
@@ -129,7 +129,7 @@ Evaluated over full 180-second matches (5,400 physics steps per match) with real
 
 ---
 
-## 💡 The 9 Optimization Breakthroughs
+## 💡 The 9 Optimisation Breakthroughs
 
 The journey from initial baseline to champion policy was paved by diagnosing and eliminating nine distinct failure modes:
 
@@ -143,7 +143,7 @@ The journey from initial baseline to champion policy was paved by diagnosing and
                ├───────────────────────────────────┼────────────────────────────────────┘
                ▼
 [Phase 4: Static Sector Starvation] ──> Dynamic Relative Voronoi (Soft distance-weighted territory claims)
-[Phase 5: Bumper Deflection Glitch] ──> Holonomic Mecanum Cross-Track Centering (vy = clip(ly * 2.5, -300, 300))
+[Phase 5: Bumper Deflection Glitch] ──> Holonomic Mecanum Cross-Track Centring (vy = clip(ly * 2.5, -300, 300))
 [Phase 6: Wall Net Repulsion Fight] ──> Dynamic Net Field Masking & Perpendicular Strafe Funneling
 [Phase 7: Rolling Ball Misses]      ──> Lead-Pursuit Predictive Extrapolation (x_pred = x + vx * t_intercept)
 [Phase 8: False-Full Lockup Bug]    ──> Belly Emptiness Verification on Penalty / Near-Net Reset
@@ -151,7 +151,7 @@ The journey from initial baseline to champion policy was paved by diagnosing and
 ```
 
 1. **Phase 1: Addressing the "Timid Veto" Failure**  
-   *Problem:* An early heuristic heavily penalized balls near opponents (10× penalty within 350mm). Robots became cowardly, retreating to empty corners while aggressive APF bots swept the arena (scores dropped to 14.7 pts).  
+   *Problem:* An early heuristic heavily penalised balls near opponents (10× penalty within 350mm). Robots became cowardly, retreating to empty corners while aggressive APF bots swept the arena (scores dropped to 14.7 pts).  
    *Fix:* Replaced hard opponent vetoes with a continuous **Cluster Value Density** utility:  
    $$\text{Utility} = \frac{\text{Value} + \text{Cluster Density}}{\text{Distance}^{0.88}}$$  
    *Result:* Score recovered to 38.0+ pts; decisive snatching replaced timid retreats.
@@ -163,7 +163,7 @@ The journey from initial baseline to champion policy was paved by diagnosing and
 
 3. **Phase 3: Eliminating Teammate Collisions via ESP-NOW Safety Bubble**  
    *Problem:* Telemetry revealed that in 2v2 matches, multiple collision penalties were caused by teammates converging on the same central clusters and ramming each other.  
-   *Fix:* Simulated wireless inter-robot telemetry (modeling **ESP-NOW** radio on ESP32, $<1\text{ ms}$ latency). Broadcasted live coordinates with mutual repulsion at 650mm and active reverse braking ($v_{\text{cmd}} < 0$) when closing within 420mm.  
+   *Fix:* Simulated wireless inter-robot telemetry (modelling **ESP-NOW** radio on ESP32, $<1\text{ ms}$ latency). Broadcasted live coordinates with mutual repulsion at 650mm and active reverse braking ($v_{\text{cmd}} < 0$) when closing within 420mm.  
    *Result:* Teammate collisions dropped to **exactly 0** across all seeds.
 
 4. **Phase 4: True Dynamic Relative Voronoi vs. Static Quadrant Starvation**  
@@ -171,16 +171,16 @@ The journey from initial baseline to champion policy was paved by diagnosing and
    *Fix:* Replaced fixed coordinates with **Dynamic Relative Voronoi** partitioning based on live teammate proximity: if $d_{\text{teammate}} < 0.75 \times d_{\text{self}}$, yield with a $0.35\times$ factor; if $d_{\text{self}} < 0.85 \times d_{\text{teammate}}$, claim aggressively with a $1.35\times$ bonus.  
    *Result:* Teammates dynamically fan out across any random distribution with zero coordination deadlocks.
 
-5. **Phase 5: Holonomic Mecanum Cross-Track Intake Centering**  
+5. **Phase 5: Holonomic Mecanum Cross-Track Centring**  
    *Problem:* Approaching balls at 500 mm/s with 120ms motor inertia lag caused minor 5–10° heading errors, resulting in balls striking the outer 25mm bumper wall and deflecting away at 300+ mm/s.  
-   *Fix:* Exploited 4-wheel Mecanum holonomic drive: when within 400mm of a target ball, applied lateral strafe centering:  
+   *Fix:* Exploited 4-wheel Mecanum holonomic drive: when within 400mm of a target ball, applied lateral strafe centring:  
    $$v_y = \text{clip}(l_y \times 2.5, -300, 300)$$  
    pulling the 150mm mouth directly over the ball midline.  
    *Result:* Intake capture success jumped from $\sim 70\%$ to **$>95\%$** on first-pass approaches.
 
 6. **Phase 6: Wall Net Repulsion Masking & Square Dock Funneling**  
    *Problem:* APF repulsive wall fields fought the robot as it approached the scoring net, causing deceleration and hesitations right at the dock threshold.  
-   *Fix:* Dynamically masked normal wall repulsion along the assigned net opening when docking. Added perpendicular heading pre-alignment ($\theta \to \pm\pi/2$ or $0/\pi$) and lateral strafe funneling toward the 1,250mm net centerline.  
+   *Fix:* Dynamically masked normal wall repulsion along the assigned net opening when docking. Added perpendicular heading pre-alignment ($\theta \to \pm\pi/2$ or $0/\pi$) and lateral strafe funneling toward the 1,250mm net centreline.  
    *Result:* Instant first-touch deposit triggers on arrival; transit and banking delay reduced by 2–4 seconds per cycle.
 
 7. **Phase 7: Lead-Pursuit Predictive Ball Interception**  
@@ -191,19 +191,19 @@ The journey from initial baseline to champion policy was paved by diagnosing and
 
 8. **Phase 8: Resolving Container False-Full Lockup Bug**  
    *Problem:* In Seed 3, Robot 0 scored 0 points because an early collision penalty dumped its held balls, but `postulated_held` retained a stale count of 5. The robot drove to the net with an empty container where the deposit timer never triggered (`held == 0`), preventing `postulated_held` from resetting and trapping Robot 0 in an infinite dock loop.  
-   *Fix:* Added physical belly emptiness verification: `postulated_held` resets to 0 whenever penalized or when within 300mm of the net with `total_held_elements == 0`.  
+   *Fix:* Added physical belly emptiness verification: `postulated_held` resets to 0 whenever penalised or when within 300mm of the net with `total_held_elements == 0`.  
    *Result:* 100% elimination of dock lockups; Seed 3 score jumped to 80 team points (40, 40).
 
-9. **Phase 9: Dynamic Opponent Neutralization (Opening 35 Seconds)**  
-   *Problem:* In seeds where APF scored well, APF completed early triads in the uncontested center and their own half.  
-   *Fix:* Added an opening 35-second contested compound denial ($1.35\times$ bonus for compounds in the central neutral zone), vacuuming key colors before APF could reach them.  
+9. **Phase 9: Dynamic Opponent Neutralisation (Opening 35 Seconds)**  
+   *Problem:* In seeds where APF scored well, APF completed early triads in the uncontested centre and their own half.  
+   *Fix:* Added an opening 35-second contested compound denial ($1.35\times$ bonus for compounds in the central neutral zone), vacuuming key colours before APF could reach them.  
    *Result:* Suppressed opponent APF scores (dropping them to 0 in Seed 1); secured the **104-point team peak** and solidified our **+10.1 pt tournament margin**.
 
 ---
 
 ## ⚙ Physical Hardware & Actuator Realism
 
-A major flaw of many RL robotics simulators is operating under idealized physics, resulting in the notorious **sim-to-real gap**. Our simulation explicitly models physical constraints derived from our 2025 hardware post-mortem:
+A major flaw of many RL robotics simulators is operating under idealised physics, resulting in the notorious **sim-to-real gap**. Our simulation explicitly models physical constraints derived from our 2025 hardware post-mortem:
 
 - **Chassis & Drive**: 4-wheel Mecanum holonomic drive ($200 \times 200\text{ mm}$ footprint, 150mm intake mouth, C-shaped belly cavity holding up to 6 elements).
 - **130-Size Toy DC Motors**: ~1:48 gearbox reduction, 3V–6V operating range, 70–250 mA no-load current.
@@ -222,7 +222,7 @@ DEPOSIT_DURATION_SECONDS = 30.0 # Docking & depositing takes 30s
 
 > [!NOTE]
 > **Context on these arbitrary parameters:**
-> 1. **10.0-Second Penalty Freeze**: This value was modeled after what competition organizers and marshals enforced on site during the live event for infractions, collisions, or robot interventions.
+> 1. **10.0-Second Penalty Freeze**: This value was modelled after what competition organisers and marshals enforced on site during the live event for infractions, collisions, or robot interventions.
 > 2. **30.0-Second Deposit Duration**: This was an assumed arbitrary duration chosen to reflect the physical time an electromechanical mechanism (servo-actuated gate, ramp tilt, or continuous reverse-belt conveyor) would realistically take to discharge captured elements into the scoring net.
 > 
 > Both values are fully configurable in `core.py` if your team's physical ejector operates faster or competition rule updates modify penalty freeze durations.
@@ -288,7 +288,7 @@ UnibotsUK_25_Codebase/
     ├── env.py                             # PettingZoo Parallel multi-agent gym env
     ├── controllers.py                     # All 5 controllers (APF, Flat, HRL, Macro, Tree)
     ├── planner.py                         # APF vector field navigation planner
-    ├── render.py                          # Pygame 60 FPS real-time arena visualizer
+    ├── render.py                          # Pygame 60 FPS real-time arena visualiser
     ├── play.py                            # Interactive GUI simulator with 7 match modes
     ├── benchmark_all.py                   # Grand 5-way tournament benchmarking suite
     ├── compare_controllers.py             # Head-to-head match runner
@@ -317,7 +317,7 @@ When preparing to publish this repository to GitHub, follow these best practices
 3. **Documentation & Manifestos**:
    - `README.md`: Project documentation.
    - `requirements.txt`: Python package dependencies.
-   - `TRAINING_AND_OPTIMIZATION_SUMMARY.json`: Detailed 250-line experiment data and optimization chronology.
+   - `TRAINING_AND_OPTIMIZATION_SUMMARY.json`: Detailed 250-line experiment data and optimisation chronology.
    - `AI Algorithms in Robotic Navigation.pdf`, `Unibots Rulebook 2026-2027 v1.0-1.pdf`, `Unibots26-AprilTags-0-23.pdf`: Reference PDFs.
 
 ### 🚫 Documents to Ignore (`.gitignore`)
@@ -402,14 +402,14 @@ Hardware acceleration is toggled directly in the training scripts:
 #### ⚡ Performance Difference: Why CPU is Often Faster
 In deep reinforcement learning with robotics simulators, hardware performance can be counter-intuitive:
 - **Small Neural Network Footprint**: The PPO actor-critic network is a lightweight MLP ($32 \to 64 \to 64 \to 3$). The computational cost of the forward pass is minimal ($\ll 1\text{ ms}$).
-- **PCIe Bus Bottleneck**: The custom 30 Hz multi-agent arena physics, ball bouncing, raycasts, and spatial memory updates run in Python on the host CPU. Moving small 32-dimensional tensors back and forth across the PCIe bus between system RAM and GPU VRAM introduces data-transfer latency and CUDA synchronization overhead.
+- **PCIe Bus Bottleneck**: The custom 30 Hz multi-agent arena physics, ball bouncing, raycasts, and spatial memory updates run in Python on the host CPU. Moving small 32-dimensional tensors back and forth across the PCIe bus between system RAM and GPU VRAM introduces data-transfer latency and CUDA synchronisation overhead.
 - **Result**: In raw frames-per-second (FPS), **running purely on CPU is actually faster** than GPU for this specific environment!
 - **Why GPU was Used**: GPU (`cuda`) was explicitly selected during our training runs because the host system needed to execute other CPU-intensive multitasking workloads simultaneously. Offloading tensor batches to the GPU allowed training to proceed smoothly in the background without starving or throttling host CPU cores.
 
 ---
 
 ### 5. Retraining the Models
-- **Train Behavior Cloning + PPO**:
+- **Train Behavioural Cloning + PPO**:
   ```bash
   python -m simulation.train_bc_rl
   ```
@@ -428,7 +428,7 @@ In deep reinforcement learning with robotics simulators, hardware performance ca
 
 In the spirit of open scientific disclosure:
 - **2025 Original Foundation**: The initial 2025 baseline code and preliminary navigation concepts were developed with the assistance of **Gemini 2.0 Pro**.
-- **2026 Multi-Agent RL & Strategic Architecture**: The 2026 revival, including the PettingZoo environment, realistic 130-motor stiction physics, the 9 optimization breakthroughs, tournament benchmarking, Lin Yi Street Fighter AI adaptations, and ESP32 C++ decision tree distillation, was designed and implemented with the assistance of **Gemini 3.1 Pro**.
+- **2026 Multi-Agent RL & Strategic Architecture**: The 2026 revival, including the PettingZoo environment, realistic 130-motor stiction physics, the 9 optimisation breakthroughs, tournament benchmarking, Lin Yi Street Fighter AI adaptations, and ESP32 C++ decision tree distillation, was designed and implemented with the assistance of **Gemini 3.1 Pro**.
 
 ---
 
@@ -436,4 +436,4 @@ In the spirit of open scientific disclosure:
 
 - **License**: MIT License. See [LICENSE](LICENSE) for details.
 - **Inspiration**: Special thanks to **Lin Yi** for open-sourcing [LYiHub/pub-street-fighter-ai](https://github.com/LYiHub/pub-street-fighter-ai), demonstrating practical reinforcement learning, reward shaping, and hierarchical distillation.
-- **Competition**: [Unibots UK](https://unibots.uk/) for organizing the university autonomous robotics competition.
+- **Competition**: [Unibots UK](https://unibots.uk/), organised by Cambridge University, UK, for hosting the university autonomous robotics championship.
