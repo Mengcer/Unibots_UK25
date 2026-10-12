@@ -13,7 +13,7 @@
 
 ## 📖 Table of Contents
 - [Project Journey & Motivation](#-project-journey--motivation)
-  - [The 2025 Campaign & The QMUL Dilemma](#the-2025-campaign--the-qmul-dilemma)
+  - [The 2025 Campaign & Strategic Perspectives](#the-2025-campaign--strategic-perspectives)
   - [The 2026 Revival: Attacking the Problem Head-On](#the-2026-revival-attacking-the-problem-head-on)
   - [Inspiration: Lin Yi's Street Fighter AI](#inspiration-lin-yis-street-fighter-ai)
 - [System Architecture & Controller Spectrum](#-system-architecture--controller-spectrum)
@@ -37,17 +37,21 @@
 
 ## 🧭 Project Journey & Motivation
 
-### The 2025 Campaign & The QMUL Dilemma
-In the **Unibots UK 2025 Autonomous Robotics Championship**, teams design and build autonomous mobile robots to compete in a dynamic 2v2 arena. The objective is to forage for **Atoms** (steel balls) and **Compounds** (Red, Green, Blue tokens), deposit them into designated scoring nets within a strict 180-second match duration, and avoid severe collision penalties (teleportation to base, dumping all held elements, and incurring a 10-second penalty freeze).
+### The 2025 Campaign & Strategic Perspectives
+In the **Unibots UK 2025 Autonomous Robotics Championship**, robots compete in a dynamic arena where each bot forages for **Atoms** (steel balls) and **Compounds** (Red, Green, Blue tokens), depositing them into assigned scoring nets within a strict 180-second match duration while avoiding severe collision penalties (teleportation to base, dumping all held items, and a 10-second penalty freeze).
 
-During the 2025 tournament, an effective strategy emerged: a team from **Queen Mary University of London (QMUL)** deployed a hardcoded, open-loop scanning routine. Their bot executed rigid sweeping lines across the field with zero reactive feedback, securing **3rd place**. 
+#### Match Format: 4-Way Free-for-All & Same-School Pairings
+In the official tournament, matches are fundamentally a **4-way free-for-all** (four independent teams competing against each other simultaneously). However, in actual tournament schedules, situations often arise where two teams from the same university or club end up drawn into the exact same arena heat. In those moments, inter-robot awareness and cooperative coordination—avoiding teammate collisions and deconflicting targets—proves decisive. For benchmarking clarity, modular analysis, and simplicity, our simulation framework models both full **4-way individual free-for-alls** and **cooperative 2v2 pairings**.
 
-While undeniable in its efficiency and raw speed, our team believed that open-loop scanning circumvented the true engineering spirit of the competition:
-- It lacked situational awareness in dynamic multi-robot traffic.
-- It could not adapt to contested resources or opponent interference.
-- It was brittle against wheel slip, bumper bounces, and field perturbations.
+#### Open-Loop Scanning vs. Adaptive Autonomous Navigation
+During the 2025 tournament, a podium-finishing team demonstrated how remarkably effective a disciplined, hardcoded open-loop scanning routine can be: by executing consistent, high-speed sweeping lines across the field with minimal sensor overhead, their bot secured an impressive **3rd place finish**. It proved just how fast, reliable, and competitive open-loop execution can be when tuned well.
 
-Our 2025 entry took the autonomous route using **Artificial Potential Fields (APF)**. However, physical reality struck hard: **severe electrical and mechanical challenges** crippled our field performance. Gearbox stiction, sensor noise, and heavy stall current spikes frequently browned out our onboard ESP32 logic rails under locked-rotor conditions. Consequently, our 2025 results fell well short of our 2024 campaign.
+However, our team was personally captivated by the deeper engineering challenge of **adaptive autonomous robotics**:
+- Can a robot dynamically perceive contested elements and prioritize high-value clusters?
+- Can it reactively evade unpredictable multi-robot traffic and negotiate close-quarters encounters?
+- Can it dynamically self-correct against wheel slip, bumper deflections, and mechanical stiction?
+
+Our 2025 entry took the autonomous route using **Artificial Potential Fields (APF)**. However, physical reality struck hard: **severe electrical and mechanical challenges** crippled our field performance. Gearbox stiction, sensor noise, and heavy stall current spikes frequently browned out our onboard ESP32 logic rail under locked-rotor conditions. Consequently, our 2025 results fell well short of our 2024 campaign.
 
 ### The 2026 Revival: Attacking the Problem Head-On
 In 2026, armed with the improved **Unibots UK 2026–2027 Rulebook**, we decided to revisit the challenge. Rather than resorting to hardcoded paths, we set out to solve autonomous navigation from first principles—analyzing the problem across both **micro** (low-level motor physics, traction, slew rate, holonomic centering) and **macro** (high-level multi-agent game strategy, triad set completion, auction coordination) levels.
